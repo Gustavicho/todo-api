@@ -72,9 +72,15 @@ class ToDoList
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+    /**
+      * Set the "created_at" property with a DateTimeImmutable instance.
+      * @param string $time Optional.     Deafult is 'now'.
+      * @param string $timezone Optional. Default is 'UTC'.
+      */
+    #[ORM\PrePersist]
+    public function setCreatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->created_at = $created_at;
+        $this->created_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
@@ -83,10 +89,16 @@ class ToDoList
     {
         return $this->updated_at;
     }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
+    
+    /**
+      * Set the "uptadet_at" property with a DateTimeImmutable instance.
+      * @param string $time Optional.     Deafult is 'now'.
+      * @param string $timezone Optional. Default is 'UTC'.
+      */
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->updated_at = $updated_at;
+        $this->updated_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
@@ -103,7 +115,7 @@ class ToDoList
     {
         if (!$this->tasks->contains($task)) {
             $this->tasks->add($task);
-            $task->setTasks($this);
+            $task->setList($this);
         }
 
         return $this;
@@ -113,8 +125,8 @@ class ToDoList
     {
         if ($this->tasks->removeElement($task)) {
             // set the owning side to null (unless already changed)
-            if ($task->getTasks() === $this) {
-                $task->setTasks(null);
+            if ($task->getList() === $this) {
+                $task->setList(null);
             }
         }
 

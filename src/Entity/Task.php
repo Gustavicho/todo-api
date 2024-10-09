@@ -68,9 +68,15 @@ class Task
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
+     /**
+      * Set the "created_at" property with a DateTimeImmutable instance.
+      * @param string $time Optional.     Deafult is 'now'.
+      * @param string $timezone Optional. Default is 'UTC'.
+      */
+    #[ORM\PrePersist]
+    public function setCreatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->created_at = $created_at;
+        $this->created_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
@@ -79,10 +85,16 @@ class Task
     {
         return $this->updated_at;
     }
-
-    public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
+    
+    /**
+      * Set the "uptadet_at" property with a DateTimeImmutable instance.
+      * @param string $time Optional.     Deafult is 'now'.
+      * @param string $timezone Optional. Default is 'UTC'.
+      */
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->updated_at = $updated_at;
+        $this->updated_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
@@ -99,14 +111,14 @@ class Task
         return $this;
     }
 
-    public function getTasks(): ?ToDoList
+    public function getList(): ?ToDoList
     {
-        return $this->tasks;
+        return $this->list;
     }
 
-    public function setTasks(?ToDoList $tasks): static
+    public function setList(?ToDoList $list): static
     {
-        $this->tasks = $tasks;
+        $this->list = $list;
 
         return $this;
     }
