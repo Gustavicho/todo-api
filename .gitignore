@@ -1,3 +1,4 @@
+.phpactor.json
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -8,4 +9,8 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-.phpactor.json
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
