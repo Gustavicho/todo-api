@@ -6,21 +6,17 @@ use App\Repository\ToDoListRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ToDoListRepository::class)]
 class ToDoList
 {
     use Timestamp;
-
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
+    use EntityDefault;
 
     #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Type('boolean')]
     private ?bool $shared = null;
 
     /**
@@ -32,23 +28,6 @@ class ToDoList
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): static
-    {
-        $this->title = $title;
-
-        return $this;
     }
 
     public function isShared(): ?bool

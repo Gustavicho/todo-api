@@ -4,6 +4,24 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Trait Timestamp
+ *
+ * The `Timestamp` trait manages automatic timestamps for entity creation (`createdAt`) 
+ * and updates (`updatedAt`). It can be used in any entity that requires these fields.
+ *
+ * Attributes:
+ * - `createdAt`: Stores the entity's creation timestamp. Set automatically on persist (`PrePersist`).
+ * - `updatedAt`: Stores the entity's last update timestamp. Set automatically on update (`PreUpdate`).
+ *
+ * Methods:
+ * - `getCreatedAt()`: Returns the `createdAt` timestamp or `null` if not set.
+ * - `getUpdatedAt()`: Returns the `updatedAt` timestamp or `null` if not set.
+ * - `setCreatedAt()`: Sets `createdAt` to the current time (default: 'now', timezone: 'UTC'). Called before persisting.
+ * - `setUpdatedAt()`: Sets `updatedAt` to the current time (default: 'now', timezone: 'UTC'). Called before updating.
+ */
+
+#[ORM\HasLifecycleCallbacks]
 trait Timestamp
 {
     #[ORM\Column(name: 'created_at')]
@@ -21,11 +39,7 @@ trait Timestamp
     {
         return $this->updatedAt;
     }
-    /**
-     * Set the "createdAt" property with a DateTimeImmutable instance.
-     * @param string $time Optional.     Deafult is 'now'.
-     * @param string $timezone Optional. Default is 'UTC'.
-     */
+
     #[ORM\PrePersist]
     public function setCreatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
@@ -34,11 +48,6 @@ trait Timestamp
         return $this;
     }
 
-    /**
-      * Set the "uptadet_at" property with a DateTimeImmutable instance.
-      * @param string $time Optional.     Deafult is 'now'.
-      * @param string $timezone Optional. Default is 'UTC'.
-      */
     #[ORM\PreUpdate]
     public function setUpdatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
