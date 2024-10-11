@@ -65,7 +65,7 @@ class TaskController extends AbstractController
         return $this->json($task);
     }
 
-    #[Route('/lists/{listId}/tasks/{id}', name: 'toDoList_update', methods: ['PUT'])]
+    #[Route('/lists/{listId}/tasks/{id}', name: 'task_update', methods: ['PUT'])]
     public function update(EntityManagerInterface $em, int $listId, int $id): JsonResponse
     {
         // autoraização
@@ -87,7 +87,8 @@ class TaskController extends AbstractController
         // validar dados
 
         $task->setTitle('urras');
-        $task->setShared(true);
+        $task->setDescription('Muito foda');
+        $task->setStatus(TaskStatus::DONE);
         $task->setUpdatedAt();
 
         $em->flush();
@@ -95,7 +96,7 @@ class TaskController extends AbstractController
         return $this->json($task);
     }
 
-    #[Route('/lists/{listId}/tasks/{id}', name: 'toDoList_delete', methods: ['DELETE'])]
+    #[Route('/lists/{listId}/tasks/{id}', name: 'task_delete', methods: ['DELETE'])]
     public function destroy(EntityManagerInterface $em, int $listId, int $id): JsonResponse
     {
         // autoraização
