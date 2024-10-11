@@ -18,7 +18,7 @@ class ToDoListController extends AbstractController
 
         return $this->json(
             $em->getRepository(ToDoList::class)->findAll(),
-            context: ['groups' => 'toDoList_list']
+            // context: ['groups' => 'toDoList_list']
         );
     }
 
@@ -29,7 +29,7 @@ class ToDoListController extends AbstractController
 
         return $this->json(
             $em->getRepository(ToDoList::class)->find($id),
-            context: ['groups' => ['toDoList_list', 'with_tasks']]
+            // context: ['groups' => ['toDoList_list', 'with_tasks']]
         );
     }
 

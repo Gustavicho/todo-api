@@ -21,7 +21,7 @@ class TaskController extends AbstractController
         return $this->json(
             $em->getRepository(Task::class)
                 ->findBy(['list' => $listId]),
-            context: ['groups' => 'task_list'],
+            // context: ['groups' => 'task_list'],
         );
     }
 
@@ -33,7 +33,7 @@ class TaskController extends AbstractController
         return $this->json(
             $em->getRepository(Task::class)
                 ->findBy(['list' => $listId, 'id' => $id]),
-            context: ['groups' => 'task_list'],
+            // context: ['groups' => 'task_list'],
         );
     }
 

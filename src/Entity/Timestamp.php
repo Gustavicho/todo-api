@@ -12,6 +12,15 @@ trait Timestamp
     #[ORM\Column(name: 'updated_at', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
     /**
      * Set the "createdAt" property with a DateTimeImmutable instance.
      * @param string $time Optional.     Deafult is 'now'.
@@ -23,11 +32,6 @@ trait Timestamp
         $this->createdAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
     }
 
     /**
