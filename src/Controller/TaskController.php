@@ -13,30 +13,38 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TaskController extends AbstractController
 {
-    #[Route('/tasks', name: 'task_list', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): JsonResponse
+    #[Route('/lists/{listId}/tasks', name: 'task_list', methods: ['GET'])]
+    public function index(int $listId, EntityManagerInterface $em): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
-        return $this->json($em->getRepository(Task::class)->findAll());
+        return $this->json(
+            $em->getRepository(Task::class)
+                ->findBy(['list' => $listId]),
+            context: ['groups' => 'task_list'],
+        );
     }
 
-    #[Route('/tasks/{id}', name: 'task_show', methods: ['GET'])]
-    public function show(EntityManagerInterface $em, int $id): JsonResponse
+    #[Route('/lists/{listId}/tasks/{id}', name: 'task_show', methods: ['GET'])]
+    public function show(EntityManagerInterface $em, int $id, int $listId): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
-        return $this->json($em->getRepository(Task::class)->find($id));
+        return $this->json(
+            $em->getRepository(Task::class)
+                ->findBy(['list' => $listId, 'id' => $id]),
+            context: ['groups' => 'task_list'],
+        );
     }
 
-    #[Route('/lists/{listId}/task', name: 'task_store', methods: ['POST'])]
+    #[Route('/lists/{listId}/tasks', name: 'task_store', methods: ['POST'])]
     public function store(Request $req, EntityManagerInterface $em, int $listId): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
         $task = new Task();
         $list = $em->getRepository(ToDoList::class)->find($listId);
-      
+
         if (! $list) {
             throw $this->createNotFoundException(
                 'No list found with the id: ' . $listId . ' to create the task'
@@ -47,19 +55,20 @@ class TaskController extends AbstractController
         $task->setTitle('aiai');
         $task->setDescription('top demais');
         $task->setStatus(TaskStatus::TODO);
-    
+        $task->setCreatedAt();
+
         $list->addTask($task);
 
         $em->persist($task);
         $em->flush();
 
-        return $this->json($list);
+        return $this->json($task);
     }
 
     #[Route('/lists/{listId}/tasks/{id}', name: 'toDoList_update', methods: ['PUT'])]
     public function update(EntityManagerInterface $em, int $listId, int $id): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
         $list = $em->getRepository(ToDoList::class)->find($listId);
         if (! $list) {
@@ -80,8 +89,8 @@ class TaskController extends AbstractController
         $task->setTitle('urras');
         $task->setShared(true);
         $task->setUpdatedAt();
-  
-        $em->flush();      
+
+        $em->flush();
 
         return $this->json($task);
     }
@@ -89,7 +98,7 @@ class TaskController extends AbstractController
     #[Route('/lists/{listId}/tasks/{id}', name: 'toDoList_delete', methods: ['DELETE'])]
     public function destroy(EntityManagerInterface $em, int $listId, int $id): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
         $list = $em->getRepository(ToDoList::class)->find($listId);
         if (! $list) {
@@ -109,7 +118,7 @@ class TaskController extends AbstractController
 
         $em->remove($task);
         $em->flush();
-        
+
         return $this->json([
             'msg' => 'Task ' . $id . ' deleted with success!'
         ]);

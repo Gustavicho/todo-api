@@ -6,6 +6,8 @@ use App\Enum\TaskStatus;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
@@ -13,25 +15,32 @@ class Task
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['task_list', 'with_tasks'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['task_list', 'with_tasks'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['task_list', 'with_tasks'])]
     private ?string $description = null;
 
     #[ORM\Column(enumType: TaskStatus::class)]
+    #[Groups(['task_list', 'with_tasks'])]
     private ?TaskStatus $status = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[ORM\Column(name: 'created_at')]
+    #[Groups(['task_list', 'with_tasks'])]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updated_at = null;
+    #[ORM\Column(name: 'updated_at', nullable: true)]
+    #[Groups(['task_list', 'with_tasks'])]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(targetEntity: ToDoList::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Ignore]
     private ?ToDoList $list = null;
 
     public function getId(): ?int
@@ -65,27 +74,27 @@ class Task
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-     /**
-      * Set the "created_at" property with a DateTimeImmutable instance.
-      * @param string $time Optional.     Deafult is 'now'.
-      * @param string $timezone Optional. Default is 'UTC'.
-      */
+    /**
+     * Set the "createdAt" property with a DateTimeImmutable instance.
+     * @param string $time Optional.     Deafult is 'now'.
+     * @param string $timezone Optional. Default is 'UTC'.
+     */
     #[ORM\PrePersist]
     public function setCreatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->created_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
+        $this->createdAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
-    
+
     /**
       * Set the "uptadet_at" property with a DateTimeImmutable instance.
       * @param string $time Optional.     Deafult is 'now'.
@@ -94,12 +103,12 @@ class Task
     #[ORM\PreUpdate]
     public function setUpdatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->updated_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
+        $this->updatedAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus(): ?TaskStatus
     {
         return $this->status;
     }

@@ -14,23 +14,29 @@ class ToDoListController extends AbstractController
     #[Route('/lists', name: 'toDoList_list', methods: ['GET'])]
     public function index(EntityManagerInterface $em): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
-        return $this->json($em->getRepository(ToDoList::class)->findAll());
+        return $this->json(
+            $em->getRepository(ToDoList::class)->findAll(),
+            context: ['groups' => 'toDoList_list']
+        );
     }
 
     #[Route('/lists/{id}', name: 'toDoList_show', methods: ['GET'])]
     public function show(EntityManagerInterface $em, int $id): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
-        return $this->json($em->getRepository(ToDoList::class)->find($id));
+        return $this->json(
+            $em->getRepository(ToDoList::class)->find($id),
+            context: ['groups' => ['toDoList_list', 'with_tasks']]
+        );
     }
 
     #[Route('/lists', name: 'toDoList_store', methods: ['POST'])]
     public function store(Request $req, EntityManagerInterface $em): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
         $list = new ToDoList();
 
@@ -49,14 +55,14 @@ class ToDoListController extends AbstractController
     #[Route('/lists/{id}', name: 'toDoList_update', methods: ['PUT'])]
     public function update(EntityManagerInterface $em, int $id): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
         $list = $em->getRepository(ToDoList::class)->find($id);
 
         if (! $list) {
-              throw $this->createNotFoundException(
-                  'No list found with the id: ' . $id
-              );
+            throw $this->createNotFoundException(
+                'No list found with the id: ' . $id
+            );
         }
 
         // validar dados
@@ -64,8 +70,8 @@ class ToDoListController extends AbstractController
         $list->setTitle('urras');
         $list->setShared(true);
         $list->setUpdatedAt();
-  
-        $em->flush();      
+
+        $em->flush();
 
         return $this->json($list);
     }
@@ -73,10 +79,10 @@ class ToDoListController extends AbstractController
     #[Route('/lists/{id}', name: 'toDoList_delete', methods: ['DELETE'])]
     public function destroy(EntityManagerInterface $em, int $id): JsonResponse
     {
-        // autoraização    
+        // autoraização
 
         $list = $em->getRepository(ToDoList::class)->find($id);
-        
+
         if (! $list) {
             throw $this->createNotFoundException(
                 'No list found with the id: ' . $id
@@ -85,7 +91,7 @@ class ToDoListController extends AbstractController
 
         $em->remove($list);
         $em->flush();
-        
+
         return $this->json([
             'msg' => 'List ' . $id . ' deleted with success!'
         ]);

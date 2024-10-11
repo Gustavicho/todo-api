@@ -6,6 +6,7 @@ use App\Repository\ToDoListRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ToDoListRepository::class)]
 class ToDoList
@@ -13,24 +14,30 @@ class ToDoList
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['toDoList_list'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['toDoList_list'])]
     private ?string $title = null;
 
     #[ORM\Column]
+    #[Groups(['toDoList_list'])]
     private ?bool $shared = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
+    #[ORM\Column(name: 'created_at')]
+    #[Groups(['toDoList_list'])]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $updated_at = null;
+    #[ORM\Column(name: 'updated_at', nullable: true)]
+    #[Groups(['toDoList_list'])]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     /**
      * @var Collection<int, Task>
      */
     #[ORM\OneToMany(targetEntity: Task::class, mappedBy: 'list', orphanRemoval: true)]
+    #[Groups(['with_tasks'])]
     private Collection $tasks;
 
     public function __construct()
@@ -69,27 +76,27 @@ class ToDoList
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     /**
-      * Set the "created_at" property with a DateTimeImmutable instance.
+      * Set the "createdAt" property with a DateTimeImmutable instance.
       * @param string $time Optional.     Deafult is 'now'.
       * @param string $timezone Optional. Default is 'UTC'.
       */
     #[ORM\PrePersist]
     public function setCreatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->created_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
+        $this->createdAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
-    
+
     /**
       * Set the "uptadet_at" property with a DateTimeImmutable instance.
       * @param string $time Optional.     Deafult is 'now'.
@@ -98,7 +105,7 @@ class ToDoList
     #[ORM\PreUpdate]
     public function setUpdatedAt(string $time = 'now', string $timezone = 'UTC'): static
     {
-        $this->updated_at = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
+        $this->updatedAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
 
         return $this;
     }
