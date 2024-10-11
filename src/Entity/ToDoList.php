@@ -11,6 +11,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ToDoListRepository::class)]
 class ToDoList
 {
+    use Timestamp;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -77,37 +79,6 @@ class ToDoList
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    /**
-      * Set the "createdAt" property with a DateTimeImmutable instance.
-      * @param string $time Optional.     Deafult is 'now'.
-      * @param string $timezone Optional. Default is 'UTC'.
-      */
-    #[ORM\PrePersist]
-    public function setCreatedAt(string $time = 'now', string $timezone = 'UTC'): static
-    {
-        $this->createdAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-      * Set the "uptadet_at" property with a DateTimeImmutable instance.
-      * @param string $time Optional.     Deafult is 'now'.
-      * @param string $timezone Optional. Default is 'UTC'.
-      */
-    #[ORM\PreUpdate]
-    public function setUpdatedAt(string $time = 'now', string $timezone = 'UTC'): static
-    {
-        $this->updatedAt = new \DateTimeImmutable($time, new \DateTimeZone($timezone));
-
-        return $this;
     }
 
     /**
