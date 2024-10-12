@@ -4,96 +4,141 @@ namespace App\Controller;
 
 use App\Entity\ToDoList;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ToDoListController extends AbstractController
 {
+    public function __construct(
+        private EntityManagerInterface $em,
+        private ValidatorInterface $v
+    ) {
+    }
+
     #[Route('/lists', name: 'toDoList_list', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): JsonResponse
+    public function index(): Response
     {
         // autoraização
 
-        return $this->json(
-            $em->getRepository(ToDoList::class)->findAll(),
-            // context: ['groups' => 'toDoList_list']
-        );
+        $lists = $this->em->getRepository(ToDoList::class)->findAll();
+        if (! $lists) {
+            throw $this->createNotFoundException(
+                'Can\'t find any list'
+            );
+        }
+
+        return $this->json($lists);
     }
 
     #[Route('/lists/{id}', name: 'toDoList_show', methods: ['GET'])]
-    public function show(EntityManagerInterface $em, int $id): JsonResponse
+    public function show(int $id): Response
     {
         // autoraização
 
-        return $this->json(
-            $em->getRepository(ToDoList::class)->find($id),
-            // context: ['groups' => ['toDoList_list', 'with_tasks']]
-        );
+        $list = $this->em->getRepository(ToDoList::class)->find($id);
+        if (! $list) {
+            throw $this->createNotFoundException(
+                'Can\'t find the list with the id: ' . $id
+            );
+        }
+
+        return $this->json($list);
     }
 
     #[Route('/lists', name: 'toDoList_store', methods: ['POST'])]
-    public function store(Request $req, EntityManagerInterface $em): JsonResponse
+    public function store(Request $req): Response
     {
         // autoraização
 
         $list = new ToDoList();
 
-        // validar dados
+        $data = json_decode($req->getContent(), true);
+        $list->create($data);
+        // $this->createList($list, $data); // ---------------------------------------------------------
 
-        $list->setTitle('carai');
-        $list->setShared(false);
-        $list->setCreatedAt();
+        $erros = $this->v->validate($list);
+        if (count($erros) > 0) {
+            return $this->json(
+                ['message' => (string) $erros],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
-        $em->persist($list);
-        $em->flush();
+        $this->em->persist($list);
+        $this->em->flush();
 
-        return $this->json($list);
+        return $this->json([
+            'message' => 'List created with success!',
+            'list' => $list
+        ]);
     }
 
     #[Route('/lists/{id}', name: 'toDoList_update', methods: ['PUT'])]
-    public function update(EntityManagerInterface $em, int $id): JsonResponse
+    public function update(Request $req, int $id): Response
     {
         // autoraização
 
-        $list = $em->getRepository(ToDoList::class)->find($id);
-
+        $list = $this->em->getRepository(ToDoList::class)->find($id);
         if (! $list) {
             throw $this->createNotFoundException(
-                'No list found with the id: ' . $id
+                'Can\'t find the list with the id: ' . $id
             );
         }
 
-        // validar dados
+        $data = json_decode($req->getContent(), true);
+        $list->update($data);
+        // $this->updateList($list, $data); // ---------------------------------------------------------
 
-        $list->setTitle('urras');
-        $list->setShared(true);
-        $list->setUpdatedAt();
+        $erros = $this->v->validate($list);
+        if (count($erros) > 0) {
+            return $this->json(
+                ['message' => (string) $erros],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
-        $em->flush();
+        $this->em->flush();
 
-        return $this->json($list);
+        return $this->json([
+            'message' => 'List updated with succes!',
+            'list' => $list,
+        ]);
     }
 
     #[Route('/lists/{id}', name: 'toDoList_delete', methods: ['DELETE'])]
-    public function destroy(EntityManagerInterface $em, int $id): JsonResponse
+    public function destroy(int $id): Response
     {
         // autoraização
 
-        $list = $em->getRepository(ToDoList::class)->find($id);
-
+        $list = $this->em->getRepository(ToDoList::class)->find($id);
         if (! $list) {
             throw $this->createNotFoundException(
-                'No list found with the id: ' . $id
+                'Can\'t find the list with the id: ' . $id
             );
         }
 
-        $em->remove($list);
-        $em->flush();
+        $this->em->remove($list);
+        $this->em->flush();
 
         return $this->json([
-            'msg' => 'List ' . $id . ' deleted with success!'
+            'message' => 'List ' . $id . ' deleted with success!'
         ]);
+    }
+
+    private function createList(ToDoList $list, array $data): void
+    {
+        $list->setTitle($data['title'] ?? '');
+        $list->setShared($data['shared'] ?? '');
+        $list->setCreatedAt();
+    }
+
+    private function updateList(ToDoList $list, array $data): void
+    {
+        $list->setTitle($data['title'] ?? '');
+        $list->setShared($data['shared'] ?? '');
+        $list->setUpdatedAt();
     }
 }
