@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Trait\Timestamp;
+use App\Trait\EntityDataManager;
 use App\Repository\ToDoListRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,7 +14,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ToDoList
 {
     use Timestamp;
-    use EntityDefault;
+    use EntityDataManager;
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3)]
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
 
     #[ORM\Column]
     #[Assert\NotNull]
@@ -28,6 +40,23 @@ class ToDoList
     public function __construct()
     {
         $this->tasks = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
     }
 
     public function isShared(): ?bool
