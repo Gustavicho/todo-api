@@ -25,8 +25,9 @@ class ToDoListController extends AbstractController
 
         $lists = $this->em->getRepository(ToDoList::class)->findAll();
         if (! $lists) {
-            throw $this->createNotFoundException(
-                'Can\'t find any list'
+            return $this->json(
+                ['message' => 'Can\'t find any list'],
+                Response::HTTP_NOT_FOUND
             );
         }
 
@@ -40,8 +41,9 @@ class ToDoListController extends AbstractController
 
         $list = $this->em->getRepository(ToDoList::class)->find($id);
         if (! $list) {
-            throw $this->createNotFoundException(
-                'Can\'t find the list with the id: ' . $id
+            return $this->json(
+                ['message' => 'Can\'t find the list with the id: ' . $id],
+                Response::HTTP_NOT_FOUND
             );
         }
 
@@ -57,7 +59,6 @@ class ToDoListController extends AbstractController
 
         $data = json_decode($req->getContent(), true);
         $list->create($data);
-        // $this->createList($list, $data); // ---------------------------------------------------------
 
         $erros = $this->v->validate($list);
         if (count($erros) > 0) {
@@ -83,14 +84,14 @@ class ToDoListController extends AbstractController
 
         $list = $this->em->getRepository(ToDoList::class)->find($id);
         if (! $list) {
-            throw $this->createNotFoundException(
-                'Can\'t find the list with the id: ' . $id
+            return $this->json(
+                ['message' => 'Can\'t find the list with the id: ' . $id],
+                Response::HTTP_NOT_FOUND
             );
         }
 
         $data = json_decode($req->getContent(), true);
         $list->update($data);
-        // $this->updateList($list, $data); // ---------------------------------------------------------
 
         $erros = $this->v->validate($list);
         if (count($erros) > 0) {
@@ -115,8 +116,9 @@ class ToDoListController extends AbstractController
 
         $list = $this->em->getRepository(ToDoList::class)->find($id);
         if (! $list) {
-            throw $this->createNotFoundException(
-                'Can\'t find the list with the id: ' . $id
+            return $this->json(
+                ['message' => 'Can\'t find the list with the id: ' . $id],
+                Response::HTTP_NOT_FOUND
             );
         }
 
@@ -126,19 +128,5 @@ class ToDoListController extends AbstractController
         return $this->json([
             'message' => 'List ' . $id . ' deleted with success!'
         ]);
-    }
-
-    private function createList(ToDoList $list, array $data): void
-    {
-        $list->setTitle($data['title'] ?? '');
-        $list->setShared($data['shared'] ?? '');
-        $list->setCreatedAt();
-    }
-
-    private function updateList(ToDoList $list, array $data): void
-    {
-        $list->setTitle($data['title'] ?? '');
-        $list->setShared($data['shared'] ?? '');
-        $list->setUpdatedAt();
     }
 }
