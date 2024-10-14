@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use App\Trait\Timestamp;
-use App\Trait\EntityDataManager;
 use App\Repository\ToDoListRepository;
+use App\Trait\EntityDataManager;
+use App\Trait\Timestamp;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;

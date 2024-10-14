@@ -4,17 +4,17 @@ namespace App\Controller;
 
 use App\Entity\ToDoList;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class ToDoListController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private ValidatorInterface $v
+        private ValidatorInterface $v,
     ) {
     }
 
@@ -24,7 +24,7 @@ class ToDoListController extends AbstractController
         // autoraização
 
         $lists = $this->em->getRepository(ToDoList::class)->findAll();
-        if (! $lists) {
+        if (!$lists) {
             return $this->json(
                 ['message' => 'Can\'t find any list'],
                 Response::HTTP_NOT_FOUND
@@ -40,9 +40,9 @@ class ToDoListController extends AbstractController
         // autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($id);
-        if (! $list) {
+        if (!$list) {
             return $this->json(
-                ['message' => 'Can\'t find the list with the id: ' . $id],
+                ['message' => 'Can\'t find the list with the id: '.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -73,7 +73,7 @@ class ToDoListController extends AbstractController
 
         return $this->json([
             'message' => 'List created with success!',
-            'list' => $list
+            'list' => $list,
         ]);
     }
 
@@ -83,9 +83,9 @@ class ToDoListController extends AbstractController
         // autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($id);
-        if (! $list) {
+        if (!$list) {
             return $this->json(
-                ['message' => 'Can\'t find the list with the id: ' . $id],
+                ['message' => 'Can\'t find the list with the id: '.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -115,9 +115,9 @@ class ToDoListController extends AbstractController
         // autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($id);
-        if (! $list) {
+        if (!$list) {
             return $this->json(
-                ['message' => 'Can\'t find the list with the id: ' . $id],
+                ['message' => 'Can\'t find the list with the id: '.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -126,7 +126,7 @@ class ToDoListController extends AbstractController
         $this->em->flush();
 
         return $this->json([
-            'message' => 'List ' . $id . ' deleted with success!'
+            'message' => 'List '.$id.' deleted with success!',
         ]);
     }
 }

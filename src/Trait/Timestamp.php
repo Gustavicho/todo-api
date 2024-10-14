@@ -5,7 +5,7 @@ namespace App\Trait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Trait Timestamp
+ * Trait Timestamp.
  *
  * The `Timestamp` trait manages automatic timestamps for entity creation (`createdAt`)
  * and updates (`updatedAt`). It can be used in any entity that requires these fields.
@@ -20,7 +20,6 @@ use Doctrine\ORM\Mapping as ORM;
  * - `setCreatedAt()`: Sets `createdAt` to the current time (default: 'now', timezone: 'UTC'). Called before persisting.
  * - `setUpdatedAt()`: Sets `updatedAt` to the current time (default: 'now', timezone: 'UTC'). Called before updating.
  */
-
 #[ORM\HasLifecycleCallbacks]
 trait Timestamp
 {

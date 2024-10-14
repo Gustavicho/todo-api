@@ -2,9 +2,8 @@
 
 namespace App\Trait;
 
-
 /**
- * Trait EntityDataManager
+ * Trait EntityDataManager.
  *
  * Provides methods for managing the `creation` and `update` of `entities`.
  * It automates the assignment of values to entity properties using setters
@@ -27,10 +26,8 @@ trait EntityDataManager
         return $this->setData($data);
     }
 
-    // Método para atualizar uma entidade existente
     public function update(array $data): self
     {
-        // Definindo updatedAt no momento da atualização
         if (property_exists($this, 'updatedAt')) {
             $this->setUpdatedAt('now', 'America/Manaus');
         }
@@ -42,7 +39,7 @@ trait EntityDataManager
     {
         foreach ($data as $property => $value) {
             // Make the `setter` name
-            $method = 'set' . ucfirst($property);
+            $method = 'set'.ucfirst($property);
             if (method_exists($this, $method)) {
                 // call the setter
                 $this->$method($value);

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Entity\ToDoList;
-use App\Enum\TaskStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,7 +16,7 @@ class TaskController extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private ValidatorInterface $v
+        private ValidatorInterface $v,
     ) {
     }
 
@@ -27,9 +26,9 @@ class TaskController extends AbstractController
         // autoraização
 
         $tasks = $this->em->getRepository(Task::class)->findBy(['list' => $listId]);
-        if (! $tasks) {
+        if (!$tasks) {
             return $this->json(
-                ['message' => 'Can\'t find the tasks in the list ' . $listId],
+                ['message' => 'Can\'t find the tasks in the list '.$listId],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -42,9 +41,9 @@ class TaskController extends AbstractController
     {
         // autoraização
         $task = $this->em->getRepository(Task::class)->findBy(['list' => $listId, 'id' => $id]);
-        if (! $task) {
+        if (!$task) {
             return $this->json(
-                ['message' => 'Can\'t find the task ' . $id . ' in the list ' . $listId],
+                ['message' => 'Can\'t find the task '.$id.' in the list '.$listId],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -59,9 +58,9 @@ class TaskController extends AbstractController
 
         $task = new Task();
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
-        if (! $list) {
+        if (!$list) {
             return $this->json(
-                ['message' => 'No list found with the id: ' . $listId . ' to create the task'],
+                ['message' => 'No list found with the id: '.$listId.' to create the task'],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -83,7 +82,7 @@ class TaskController extends AbstractController
 
         return $this->json([
             'message' => 'Task created with succes!',
-            'task' => $task
+            'task' => $task,
         ]);
     }
 
@@ -93,17 +92,17 @@ class TaskController extends AbstractController
         // autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
-        if (! $list) {
+        if (!$list) {
             return $this->json(
-                ['message' => 'No task found with the id: ' . $listId],
+                ['message' => 'No task found with the id: '.$listId],
                 Response::HTTP_NOT_FOUND
             );
         }
 
         $task = $this->em->getRepository(Task::class)->find($id);
-        if (! $task) {
+        if (!$task) {
             return $this->json(
-                ['message' => 'No task found with id:' . $id],
+                ['message' => 'No task found with id:'.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -122,17 +121,17 @@ class TaskController extends AbstractController
         // autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
-        if (! $list) {
+        if (!$list) {
             return $this->json(
-                ['message' => 'No task found with the id: ' . $listId],
+                ['message' => 'No task found with the id: '.$listId],
                 Response::HTTP_NOT_FOUND
             );
         }
 
         $task = $this->em->getRepository(Task::class)->find($id);
-        if (! $task) {
+        if (!$task) {
             return $this->json(
-                ['message' => 'No task found with id:' . $id],
+                ['message' => 'No task found with id:'.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -143,7 +142,7 @@ class TaskController extends AbstractController
         $this->em->flush();
 
         return $this->json([
-            'msg' => 'Task ' . $id . ' deleted with success!'
+            'msg' => 'Task '.$id.' deleted with success!',
         ]);
     }
 }

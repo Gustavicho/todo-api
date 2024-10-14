@@ -2,10 +2,10 @@
 
 namespace App\Entity;
 
-use App\Trait\EntityDataManager;
-use App\Trait\Timestamp;
 use App\Enum\TaskStatus;
 use App\Repository\TaskRepository;
+use App\Trait\EntityDataManager;
+use App\Trait\Timestamp;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Ignore;
