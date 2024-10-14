@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Entity\ToDoList;
+use App\Enum\TaskStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -66,6 +67,7 @@ class TaskController extends AbstractController
         }
 
         $data = json_decode($req->getContent(), true);
+        $data['status'] = TaskStatus::fromString($data['status']);
         $task->create($data);
 
         $erros = $this->v->validate($task);
@@ -102,17 +104,29 @@ class TaskController extends AbstractController
         $task = $this->em->getRepository(Task::class)->find($id);
         if (!$task) {
             return $this->json(
-                ['message' => 'No task found with id:'.$id],
+                ['message' => 'No task found with id: '.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
 
         $data = json_decode($req->getContent(), true);
+        $data['status'] = TaskStatus::fromString($data['status']);
         $task->update($data);
+
+        $erros = $this->v->validate($task);
+        if (count($erros) > 0) {
+            return $this->json(
+                ['message' => (string) $erros],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
 
         $this->em->flush();
 
-        return $this->json($task);
+        return $this->json([
+            'message' => 'Task updated with succes!',
+            'task' => $task,
+        ]);
     }
 
     #[Route('/lists/{listId}/tasks/{id}', name: 'task_delete', methods: ['DELETE'])]
@@ -131,7 +145,7 @@ class TaskController extends AbstractController
         $task = $this->em->getRepository(Task::class)->find($id);
         if (!$task) {
             return $this->json(
-                ['message' => 'No task found with id:'.$id],
+                ['message' => 'No task found with id: '.$id],
                 Response::HTTP_NOT_FOUND
             );
         }
@@ -142,7 +156,7 @@ class TaskController extends AbstractController
         $this->em->flush();
 
         return $this->json([
-            'msg' => 'Task '.$id.' deleted with success!',
+            'message' => 'Task '.$id.' deleted with success!',
         ]);
     }
 }
