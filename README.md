@@ -2,6 +2,7 @@
 # Symfony ToDo List API
 
 This is a Symfony project, using version 7.1, developed as part of study to learn a new framework. 
+For now this project does not support Docker, because my PC does not have the minimum requirements to install it. But in the future, I intend to redo this project.
 The project makes use of dependency injection, PHP attributes, and includes entity management such as `Task` and `ToDoList`.
 
 
@@ -11,6 +12,7 @@ The project makes use of dependency injection, PHP attributes, and includes enti
 2. [Installation](#installation)
 3. [Usage](#usage)
    - [Important Routes](#important-routes)
+   - [Development Server](#development-server)
 4. [Project Structure](#project-structure)
 5. [Features](#features)
 6. [License](#license)
@@ -58,14 +60,19 @@ The project makes use of dependency injection, PHP attributes, and includes enti
    symfony console secrets:generate-keys
    ```
 
-5. **Run database migrations:**
+5. **If needed create a database:**
+
+   ```bash
+   symfony console doctrine:database:create
+   ```
+
+6. **Run database migrations:**
 
    ```bash
    symfony console doctrine:migrations:migrate
    ```
 
 ## Usage
-
 
 ### Development Server
 
