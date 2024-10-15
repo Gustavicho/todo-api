@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -20,13 +21,15 @@ class UserController extends AbstractController
     }
 
     #[Route('/register', name: 'user_store', methods: ['POST'])]
-    public function store(Request $req): JsonResponse
+    public function store(Request $req, UserPasswordHasherInterface $pwdHash): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
 
-        $data = json_decode($req->getContent(), true);
-
         $user = new User();
+
+        $data = json_decode($req->getContent(), true);
+        $data['password'] = $pwdHash->hashPassword($user, $data['password']);
+
         $user->create($data);
 
         $erros = $this->v->validate($user);
