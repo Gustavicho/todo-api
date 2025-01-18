@@ -64,12 +64,12 @@ class TaskController extends AbstractController implements ReturnPartternInterfa
     {
         // TODO: add autoraização
 
-        $task = new Task();
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
         if (!$list) {
             return $this->resNotFound(ToDoListController::ERR_NOT_FOUND);
         }
 
+        $task = new Task();
         $data = json_decode($req->getContent(), true);
         $data['status'] = TaskStatus::fromString($data['status']);
         $task->create($data);
