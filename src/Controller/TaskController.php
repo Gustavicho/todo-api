@@ -5,16 +5,28 @@ namespace App\Controller;
 use App\Entity\Task;
 use App\Entity\ToDoList;
 use App\Enum\TaskStatus;
+use App\Interface\ReturnPartternInterface;
+use App\Trait\JsonParttern;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class TaskController extends AbstractController
+class TaskController extends AbstractController implements ReturnPartternInterface
 {
+    use JsonParttern;
+
+    public const ERR_NOT_FOUND = 'Cant find the task';
+    public const ERR_BAD_REQUEST = 'Cant update the task';
+    public const ERR_INTERNAL = 'Cant update the task';
+
+    public const RES_CREATED = 'Task created with success!';
+    public const RES_UPDATED = 'Task updated with success!';
+    public const RES_DELETED = 'Task deleted with success!';
+    public const RES_OK = 'Task founded!';
+
     public function __construct(
         private EntityManagerInterface $em,
         private ValidatorInterface $v,
@@ -24,46 +36,38 @@ class TaskController extends AbstractController
     #[Route('/lists/{listId}/tasks', name: 'task_list', methods: ['GET'])]
     public function index(int $listId): JsonResponse
     {
-        // autoraização
+        // TODO: add autoraização
 
         $tasks = $this->em->getRepository(Task::class)->findBy(['list' => $listId]);
         if (!$tasks) {
-            return $this->json(
-                ['message' => 'Can\'t find the tasks in the list '.$listId],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(TaskController::ERR_NOT_FOUND);
         }
 
-        return $this->json($tasks);
+        return $this->resOk(TaskController::RES_OK, $tasks);
     }
 
     #[Route('/lists/{listId}/tasks/{id}', name: 'task_show', methods: ['GET'])]
     public function show(int $id, int $listId): JsonResponse
     {
-        // autoraização
+        // TODO: add autoraização
+
         $task = $this->em->getRepository(Task::class)->findBy(['list' => $listId, 'id' => $id]);
         if (!$task) {
-            return $this->json(
-                ['message' => 'Can\'t find the task '.$id.' in the list '.$listId],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(TaskController::ERR_NOT_FOUND);
         }
 
-        return $this->json($task);
+        return $this->resOk(TaskController::RES_OK, $task);
     }
 
     #[Route('/lists/{listId}/tasks', name: 'task_store', methods: ['POST'])]
     public function store(Request $req, int $listId): JsonResponse
     {
-        // autoraização
+        // TODO: add autoraização
 
         $task = new Task();
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
         if (!$list) {
-            return $this->json(
-                ['message' => 'No list found with the id: '.$listId.' to create the task'],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(ToDoListController::ERR_NOT_FOUND);
         }
 
         $data = json_decode($req->getContent(), true);
@@ -72,41 +76,29 @@ class TaskController extends AbstractController
 
         $erros = $this->v->validate($task);
         if (count($erros) > 0) {
-            return $this->json(
-                ['message' => (string) $erros],
-                Response::HTTP_BAD_REQUEST
-            );
+            return $this->resBadRequest((string) $erros);
         }
 
         $list->addTask($task);
         $this->em->persist($task);
         $this->em->flush();
 
-        return $this->json([
-            'message' => 'Task created with succes!',
-            'task' => $task,
-        ]);
+        return $this->resOk(TaskController::RES_CREATED, $task);
     }
 
     #[Route('/lists/{listId}/tasks/{id}', name: 'task_update', methods: ['PUT'])]
     public function update(Request $req, int $listId, int $id): JsonResponse
     {
-        // autoraização
+        // TODO: add autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
         if (!$list) {
-            return $this->json(
-                ['message' => 'No task found with the id: '.$listId],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(ToDoListController::ERR_NOT_FOUND);
         }
 
         $task = $this->em->getRepository(Task::class)->find($id);
         if (!$task) {
-            return $this->json(
-                ['message' => 'No task found with id: '.$id],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(TaskController::ERR_NOT_FOUND);
         }
 
         $data = json_decode($req->getContent(), true);
@@ -115,39 +107,27 @@ class TaskController extends AbstractController
 
         $erros = $this->v->validate($task);
         if (count($erros) > 0) {
-            return $this->json(
-                ['message' => (string) $erros],
-                Response::HTTP_BAD_REQUEST
-            );
+            return $this->resBadRequest((string) $erros);
         }
 
         $this->em->flush();
 
-        return $this->json([
-            'message' => 'Task updated with succes!',
-            'task' => $task,
-        ]);
+        return $this->resUpdated(TaskController::RES_UPDATED);
     }
 
     #[Route('/lists/{listId}/tasks/{id}', name: 'task_delete', methods: ['DELETE'])]
     public function destroy(int $listId, int $id): JsonResponse
     {
-        // autoraização
+        // TODO: add autoraização
 
         $list = $this->em->getRepository(ToDoList::class)->find($listId);
         if (!$list) {
-            return $this->json(
-                ['message' => 'No task found with the id: '.$listId],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(ToDoListController::ERR_NOT_FOUND);
         }
 
         $task = $this->em->getRepository(Task::class)->find($id);
         if (!$task) {
-            return $this->json(
-                ['message' => 'No task found with id: '.$id],
-                Response::HTTP_NOT_FOUND
-            );
+            return $this->resNotFound(TaskController::ERR_NOT_FOUND);
         }
 
         $list->removeTask($task);
@@ -155,8 +135,6 @@ class TaskController extends AbstractController
         $this->em->remove($task);
         $this->em->flush();
 
-        return $this->json([
-            'message' => 'Task '.$id.' deleted with success!',
-        ]);
+        return $this->resDeleted(TaskController::RES_DELETED);
     }
 }
