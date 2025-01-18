@@ -1,9 +1,7 @@
-
 # Symfony ToDo List API
 
-This is a Symfony project, using version 7.1, developed as part of study to learn a new framework. 
+This is a Symfony project, using version 7.1, developed as part of study to learn a new framework.
 The project makes use of dependency injection, PHP attributes, and includes entity management such as `Task` and `ToDoList`.
-
 
 ## Table of Contents
 
@@ -66,7 +64,6 @@ The project makes use of dependency injection, PHP attributes, and includes enti
 
 ## Usage
 
-
 ### Development Server
 
 To run the application locally:
@@ -118,6 +115,7 @@ Access the application in your browser: `http://127.0.0.1:8000`
 - **src/Entity**: Contains the project's entities.
 - **src/Trait**: Contains traits for simplify entities.
 - **src/Repository**: Contains the repositories for database interaction.
+- **src/Interface**: Contains the interface for OOP
 - **src/Controller**: Contains the controllers responsible for routes and business logic.
 - **config/**: Symfony configuration files.
 
@@ -127,8 +125,8 @@ Access the application in your browser: `http://127.0.0.1:8000`
 - [x] Task lists (`ToDoList`).
 - [ ] User auth
 - [ ] User roles
+- [ ] Dockerize
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
-
