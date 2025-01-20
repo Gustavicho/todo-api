@@ -55,6 +55,7 @@ services:
         condition: service_healthy
     command: >
       sh -c "composer install &&
+            php bin/console secrets:generate-keys &&
             echo 'Aguardando banco de dados...' &&
             sleep 10 &&
             php bin/console doctrine:migrations:migrate --no-interaction &&
