@@ -1,0 +1,72 @@
+services:
+  database:
+    container_name: database_sf
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: symfony_todo
+      MYSQL_PASSWORD: password
+      MYSQL_USER: user
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+    # ports:
+    #   - "3306:3306"
+    networks:
+      - symfony
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  nginx:
+    container_name: nginx_sf
+    ports:
+      - "8080:80"
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www/symfony_todo
+    networks:
+      - symfony
+    depends_on:
+      php:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost || exit 1"]
+      interval: 10s
+      retries: 3
+      start_period: 10s
+
+  php:
+    container_name: php_sf
+    ports:
+      - "9000:9000"
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+    networks:
+      - symfony
+    volumes:
+      - ./:/var/www/symfony_todo
+    depends_on:
+      database:
+        condition: service_healthy
+    command: >
+      sh -c "composer install &&
+            echo 'Aguardando banco de dados...' &&
+            sleep 10 &&
+            php bin/console doctrine:migrations:migrate --no-interaction &&
+            php-fpm"
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  symfony:
+
+volumes:
+  mysql_data:
